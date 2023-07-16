@@ -4,6 +4,8 @@ module Wfc
     # an identifier (most likely an tile index of some sort) and an edge_types array.
     # See tile.rb for an explanation of what the edge_types array should look like
 
+    attr_reader :process_grid
+
     def initialize(tile_set, output_width, output_height)
       @tile_set = tile_set
       @output_width = output_width
@@ -34,7 +36,7 @@ module Wfc
       y = rand(@output_height)
       cell = @process_grid[x][y]
       process_starting_cell(cell)
-      @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+      @process_grid.map { |arr| arr.map { |arr2| next unless arr2.collapsed; arr2.available_tiles[0] } }
     end
 
     def iterate
@@ -45,7 +47,7 @@ module Wfc
       return false unless next_cell
 
       process_starting_cell(next_cell)
-      @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+      @process_grid.map { |arr| arr.map { |arr2| next unless arr2.collapsed; arr2.available_tiles[0] } }
     end
 
     def process_starting_cell(cell)
@@ -62,7 +64,7 @@ module Wfc
     end
 
     def evaluate_neighbor(source_cell, evaluation_direction)
-      neighbor_cell = source_cell.neighbors(@process_grid)[OPPOSITE_OF[evaluation_direction]]
+      neighbor_cell = source_cell.neighbors(@process_grid)[evaluation_direction]
       return if neighbor_cell.nil? || neighbor_cell.collapsed # we can't evaluate further than "collapsed"
 
       original_tile_count = neighbor_cell.available_tiles.length
