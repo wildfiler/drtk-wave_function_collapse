@@ -4,7 +4,7 @@ module Wfc
     # an identifier (most likely an tile index of some sort) and an edge_types array.
     # See tile.rb for an explanation of what the edge_types array should look like
 
-    attr_reader :process_grid
+    attr_reader :process_grid, :output_width, :output_height
 
     def initialize(tile_set, output_width, output_height)
       @tile_set = tile_set
@@ -89,7 +89,9 @@ module Wfc
     def find_lowest_entropy
       @uncollapsed_cells_grid.compact!
       @uncollapsed_cells_grid.sort! { |c1, c2| c1.entropy <=> c2.entropy }
-      @uncollapsed_cells_grid.first
+      entropy = @uncollapsed_cells_grid.first.entropy
+      @uncollapsed_cells_grid.take_while { |c1| c1.entropy == entropy}.sample
+      # @uncollapsed_cells_grid.first
     end
   end
 end

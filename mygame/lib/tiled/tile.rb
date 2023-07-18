@@ -59,6 +59,7 @@ module Tiled
     def init_empty(id)
       attributes.add({
         id: id,
+        probability: 1.0,
       })
       init_from_tileset
     end

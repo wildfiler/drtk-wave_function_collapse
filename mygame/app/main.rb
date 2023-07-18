@@ -26,7 +26,7 @@ def tick args
   if args.tick_count.zero?
     args.state.tileset = Tiled::Tileset.load('sprites/forest/tileset.tsx')
     tiles = create_tile_array(args.state.tileset)
-    args.state.model = Wfc::SimpleTiledModel.new(tiles, 40, 20)
+    args.state.model = Wfc::SimpleTiledModel.new(tiles, 45, 25)
     tiled_map = args.state.model.solve
     args.state.tiled_map = tiled_map
     refresh_target(args, tiled_map)
@@ -43,7 +43,7 @@ def tick args
   if args.inputs.keyboard.key_down.r
     args.state.tileset = Tiled::Tileset.load('sprites/forest/tileset.tsx')
     tiles = create_tile_array(args.state.tileset)
-    args.state.model = Wfc::SimpleTiledModel.new(tiles, 40, 20)
+    args.state.model = Wfc::SimpleTiledModel.new(tiles, 45, 25)
     tiled_map = args.state.model.solve
     args.state.tiled_map = tiled_map
     refresh_target(args, tiled_map)
@@ -52,10 +52,10 @@ def tick args
   args.outputs.sprites << {
     x: 0,
     y: 0,
-    w: 1040,
-    h: 520,
-    source_w: 520,
-    source_h: 260,
+    w: args.state.model.output_width * 13 * 2,
+    h: args.state.model.output_height * 13 * 2,
+    source_w: args.state.model.output_width * 13,
+    source_h: args.state.model.output_height * 13,
     path: :map,
   }
 end
@@ -68,12 +68,21 @@ end
 
 def refresh_target(args, tiled_map)
   target = args.outputs[:map]
-  target.width = 520
-  target.height = 260
+  target.width = args.state.model.output_width * 13
+  target.height = args.state.model.output_height * 13
   target.background_color = [0,0,0]
   target.sprites << tiled_map.map_2d do |x, y, wfc_tile|
     next unless wfc_tile
-
+    # grid = args.state.model.process_grid
+    # puts "up: #{tile_id(grid[x][y+1])}"
+    # puts "right: #{tile_id(grid[x+1][y])}"
+    # puts "down: #{tile_id(grid[x][y-1])}"
+    # puts "left: #{tile_id(grid[x-1][y])}"
     args.state.tileset.sprite_at(x * 13, y * 13, wfc_tile.identifier)
   end
+  # puts args.state.model.process_grid.flatten.map(&:available_tiles).map(&:length)
+end
+
+def tile_id(tile)
+  tile.available_tiles.map(&:identifier)
 end
