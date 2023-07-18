@@ -62,7 +62,7 @@ end
 
 def create_tile_array(tileset)
   tileset.wangsets.last.tiles.map do |id, wangtile|
-    Wfc::Tile.new(id, wangtile.wangid4)
+    Wfc::Tile.new(id, wangtile.wangid4, wangtile.tile.probability.to_f || 1.0)
   end
 end
 
